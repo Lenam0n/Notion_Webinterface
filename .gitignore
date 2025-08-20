@@ -30,3 +30,6 @@ apps/frontend/.tmp
 
 # OS
 Thumbs.db
+
+# Testing
+tests/results

@@ -13,11 +13,8 @@ export interface INotionAdapter {
   addContactBacklink(companyId: PageId, contactId: PageId): Promise<void>;
   upsertJob(params: {
     companyId: PageId;
-    jobName: string;
-    url?: string;
-    applyDateISO?: string;
     contactId?: PageId;
+    options: SyncOptions;
   }): Promise<PageId>;
-  /** High-level Prozess: 1) Firma 2) Kontakt (+Backlink) 3) Job */
   syncCompanies(list: CompanyEntry[], opts: SyncOptions): Promise<void>;
 }

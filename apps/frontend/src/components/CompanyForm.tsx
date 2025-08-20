@@ -1,39 +1,42 @@
-import React, { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { saveCompanyLocal, saveCompanyRemote } from "@service/contactService";
+import JobDetailsForm, { type JobDetails } from "./JobDetailsForm";
 
-interface Address {
-  straße: string;
-  plz: string;
-  ort: string;
-}
-interface Contact {
+type Address = { straße: string; plz: string; ort: string };
+type Contact = {
   name: string;
   email?: string;
   telefon?: string;
   linkedin?: string;
-}
-interface Company {
+};
+type Company = {
   name: string;
   adresse: Address;
+  companyEmail?: string;
+  companyNumber?: string;
   ansprechpartner?: Contact;
-}
+};
 
-interface FormState {
+type FormState = {
   name: string;
   strasse: string;
   plz: string;
   ort: string;
+  companyEmail: string;
+  companyNumber: string;
   ansprechpartnerName: string;
   ansprechpartnerEmail: string;
   ansprechpartnerTelefon: string;
   ansprechpartnerLinkedIn: string;
-}
+};
 
-const defaultFormState: FormState = {
+const defaultForm: FormState = {
   name: "",
   strasse: "",
   plz: "",
   ort: "",
+  companyEmail: "",
+  companyNumber: "",
   ansprechpartnerName: "",
   ansprechpartnerEmail: "",
   ansprechpartnerTelefon: "",
@@ -42,22 +45,26 @@ const defaultFormState: FormState = {
 
 const styles = {
   container: {
-    maxWidth: 720,
+    maxWidth: 760,
     margin: "2rem auto",
     padding: "1rem",
     fontFamily: "Arial, sans-serif",
     border: "1px solid #ddd",
     borderRadius: 4,
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  },
+  } as const,
   fieldset: {
     marginBottom: "1.5rem",
     padding: "1rem",
     border: "1px solid #ccc",
     borderRadius: 4,
-  },
-  legend: { fontWeight: "bold" as const, marginBottom: ".5rem" },
-  label: { display: "block", marginBottom: ".25rem", fontSize: ".9rem" },
+  } as const,
+  legend: { fontWeight: 700, marginBottom: ".5rem" } as const,
+  label: {
+    display: "block",
+    marginBottom: ".25rem",
+    fontSize: ".9rem",
+  } as const,
   input: {
     width: "100%",
     padding: ".5rem",
@@ -65,16 +72,14 @@ const styles = {
     border: "1px solid #ccc",
     borderRadius: 4,
     fontSize: "1rem",
-  },
-  checkboxLabel: {
+  } as const,
+  checkboxRow: {
     display: "flex",
     alignItems: "center",
+    gap: 8,
     marginBottom: "1rem",
-    fontSize: ".9rem",
-  },
-  checkbox: { marginRight: ".5rem" },
-  row: { display: "flex", gap: "8px" },
-  button: {
+  } as const,
+  btn: {
     padding: ".6rem 1.2rem",
     fontSize: "1rem",
     cursor: "pointer",
@@ -82,8 +87,8 @@ const styles = {
     color: "#fff",
     border: "none",
     borderRadius: 4,
-  },
-  buttonGhost: {
+  } as const,
+  btnGhost: {
     padding: ".6rem 1.2rem",
     fontSize: "1rem",
     cursor: "pointer",
@@ -91,28 +96,42 @@ const styles = {
     color: "#fff",
     border: "none",
     borderRadius: 4,
-  },
-  message: { marginBottom: "1rem", fontSize: "1rem" },
+  } as const,
+  row: { display: "flex", gap: 8 } as const,
 };
 
 export default function CompanyForm() {
-  const [, setCompanies] = useState<Company[]>([]);
+  const [form, setForm] = useState<FormState>(defaultForm);
   const [hasContact, setHasContact] = useState<boolean>(true);
-  const [form, setForm] = useState<FormState>(defaultFormState);
+  const [job, setJob] = useState<JobDetails>({
+    jobName: "Bewerbung",
+    jobUrl: "",
+    applyDate: "",
+    dateNachfrage: "",
+    dateRueckmeldung: "",
+    skills: [],
+    bemerkung: "",
+    beworben: false,
+    absage: false,
+  });
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
-    if (name === "hasContact") setHasContact(checked);
-    else setForm((prev) => ({ ...prev, [name]: value }));
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked, type } = e.target;
+    if (name === "hasContact") return setHasContact(checked);
+    setForm((p) => ({ ...p, [name]: type === "checkbox" ? checked : value }));
   };
 
   const buildCompany = (): Company => {
-    const company: Company = {
+    const c: Company = {
       name: form.name,
       adresse: { straße: form.strasse, plz: form.plz, ort: form.ort },
     };
+    if (form.companyEmail.trim()) c.companyEmail = form.companyEmail.trim();
+    if (form.companyNumber.trim()) c.companyNumber = form.companyNumber.trim();
+
     if (hasContact && form.ansprechpartnerName.trim()) {
       const ap: Contact = { name: form.ansprechpartnerName.trim() };
       if (form.ansprechpartnerEmail.trim())
@@ -121,24 +140,33 @@ export default function CompanyForm() {
         ap.telefon = form.ansprechpartnerTelefon.trim();
       if (form.ansprechpartnerLinkedIn.trim())
         ap.linkedin = form.ansprechpartnerLinkedIn.trim();
-      company.ansprechpartner = ap;
+      c.ansprechpartner = ap;
     }
-    return company;
+    return c;
   };
 
   const reset = () => {
-    setForm(defaultFormState);
+    setForm(defaultForm);
     setHasContact(true);
+    setJob({
+      jobName: "Bewerbung",
+      jobUrl: "",
+      applyDate: "",
+      dateNachfrage: "",
+      dateRueckmeldung: "",
+      skills: [],
+      bemerkung: "",
+      beworben: false,
+      absage: false,
+    });
   };
 
   const onSubmitLocal = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    const entry = buildCompany();
     try {
-      await saveCompanyLocal(entry);
-      setCompanies((p) => [...p, entry]);
+      await saveCompanyLocal(buildCompany());
       setSuccess("Lokal gespeichert!");
       reset();
     } catch (err) {
@@ -149,10 +177,21 @@ export default function CompanyForm() {
   const onSubmitRemote = async () => {
     setError(null);
     setSuccess(null);
-    const entry = buildCompany();
     try {
-      await saveCompanyRemote(entry, { defaultJobName: "Initiativbewerbung" });
-      setCompanies((p) => [...p, entry]);
+      const entry = buildCompany();
+      // options = SyncOptionsSchema im Backend
+      const options = {
+        jobName: job.jobName || "Bewerbung",
+        jobUrl: job.jobUrl || undefined,
+        applyDate: job.applyDate, // REQUIRED
+        dateNachfrage: job.dateNachfrage || undefined,
+        dateRueckmeldung: job.dateRueckmeldung || undefined,
+        skills: job.skills && job.skills.length ? job.skills : undefined,
+        bemerkung: job.bemerkung || undefined,
+        beworben: job.beworben,
+        absage: job.absage,
+      };
+      await saveCompanyRemote(entry, options);
       setSuccess("Direkt in Notion synchronisiert!");
       reset();
     } catch (err) {
@@ -163,10 +202,8 @@ export default function CompanyForm() {
   return (
     <div style={styles.container}>
       <h2>Firma hinzufügen</h2>
-      {error && <p style={{ ...styles.message, color: "red" }}>{error}</p>}
-      {success && (
-        <p style={{ ...styles.message, color: "green" }}>{success}</p>
-      )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
 
       <form onSubmit={onSubmitLocal}>
         <fieldset style={styles.fieldset}>
@@ -177,45 +214,71 @@ export default function CompanyForm() {
             style={styles.input}
             name="name"
             value={form.name}
-            onChange={handleChange}
+            onChange={onChange}
             required
           />
 
-          <label style={styles.label}>Straße</label>
-          <input
-            style={styles.input}
-            name="strasse"
-            value={form.strasse}
-            onChange={handleChange}
-            required
-          />
+          <div style={styles.row}>
+            <div style={{ flex: 1 }}>
+              <label style={styles.label}>Straße</label>
+              <input
+                style={styles.input}
+                name="strasse"
+                value={form.strasse}
+                onChange={onChange}
+                required
+              />
+            </div>
+            <div style={{ width: 140 }}>
+              <label style={styles.label}>PLZ</label>
+              <input
+                style={styles.input}
+                name="plz"
+                value={form.plz}
+                onChange={onChange}
+                required
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={styles.label}>Ort</label>
+              <input
+                style={styles.input}
+                name="ort"
+                value={form.ort}
+                onChange={onChange}
+                required
+              />
+            </div>
+          </div>
 
-          <label style={styles.label}>PLZ</label>
-          <input
-            style={styles.input}
-            name="plz"
-            value={form.plz}
-            onChange={handleChange}
-            required
-          />
-
-          <label style={styles.label}>Ort</label>
-          <input
-            style={styles.input}
-            name="ort"
-            value={form.ort}
-            onChange={handleChange}
-            required
-          />
+          <div style={styles.row}>
+            <div style={{ flex: 1 }}>
+              <label style={styles.label}>Company E‑Mail (optional)</label>
+              <input
+                style={styles.input}
+                name="companyEmail"
+                value={form.companyEmail}
+                onChange={onChange}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={styles.label}>Company Telefon (optional)</label>
+              <input
+                style={styles.input}
+                name="companyNumber"
+                value={form.companyNumber}
+                onChange={onChange}
+              />
+            </div>
+          </div>
         </fieldset>
 
-        <label style={styles.checkboxLabel}>
+        <label style={styles.checkboxRow as any}>
           <input
             type="checkbox"
             name="hasContact"
             checked={hasContact}
-            onChange={handleChange}
-            style={styles.checkbox as React.CSSProperties}
+            onChange={onChange}
           />
           Ansprechpartner hinzufügen
         </label>
@@ -223,48 +286,46 @@ export default function CompanyForm() {
         {hasContact && (
           <fieldset style={styles.fieldset}>
             <legend style={styles.legend}>Ansprechpartner (optional)</legend>
-
             <label style={styles.label}>Name</label>
             <input
               style={styles.input}
               name="ansprechpartnerName"
               value={form.ansprechpartnerName}
-              onChange={handleChange}
+              onChange={onChange}
             />
-
-            <label style={styles.label}>E-Mail</label>
+            <label style={styles.label}>E‑Mail</label>
             <input
               style={styles.input}
               name="ansprechpartnerEmail"
-              type="email"
               value={form.ansprechpartnerEmail}
-              onChange={handleChange}
+              onChange={onChange}
             />
-
             <label style={styles.label}>Telefon</label>
             <input
               style={styles.input}
               name="ansprechpartnerTelefon"
               value={form.ansprechpartnerTelefon}
-              onChange={handleChange}
+              onChange={onChange}
             />
-
             <label style={styles.label}>LinkedIn</label>
             <input
               style={styles.input}
               name="ansprechpartnerLinkedIn"
               value={form.ansprechpartnerLinkedIn}
-              onChange={handleChange}
+              onChange={onChange}
             />
           </fieldset>
         )}
 
-        <div style={styles.row}>
-          <button style={styles.button} type="submit">
+        {/* Neue Bewerbungsdetails */}
+        <JobDetailsForm value={job} onChange={setJob} />
+
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button style={styles.btn} type="submit">
             Lokal speichern (JSON)
           </button>
           <button
-            style={styles.buttonGhost}
+            style={styles.btnGhost}
             type="button"
             onClick={onSubmitRemote}
           >

@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { Env } from "./env";
-import { makeAdapter } from "./adapterFactory";
+import { ENV } from "./env"; // falls Bundler-Resolution aktiv ist, kannst du auch "./env"
+import { makeAdapter } from "./adapterFactory.js";
 import {
   CompanyEntrySchema,
   CompanyListSchema,
@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
-const adapter = makeAdapter(Env.ADAPTER);
+const adapter = makeAdapter("default");
 
 app.get("/v1/health", (_req, res) => res.json({ ok: true }));
 
@@ -25,13 +25,10 @@ app.post("/v1/validate", async (_req, res) => {
   }
 });
 
-/** Einzel-Company annehmen und sofort verarbeiten */
 app.post("/v1/companies", async (req, res) => {
   try {
     const entry = CompanyEntrySchema.parse(req.body?.entry);
-    const opts = SyncOptionsSchema.parse(
-      req.body?.options ?? { defaultJobName: "Initiativbewerbung" }
-    );
+    const opts = SyncOptionsSchema.parse(req.body?.options);
     await adapter.syncCompanies([entry], opts);
     res.json({ ok: true });
   } catch (e) {
@@ -39,13 +36,10 @@ app.post("/v1/companies", async (req, res) => {
   }
 });
 
-/** Bulk-JSON (Liste) annehmen – entspricht deinem CLI-Usecase */
 app.post("/v1/sync", async (req, res) => {
   try {
     const list = CompanyListSchema.parse(req.body?.list);
-    const opts = SyncOptionsSchema.parse(
-      req.body?.options ?? { defaultJobName: "Initiativbewerbung" }
-    );
+    const opts = SyncOptionsSchema.parse(req.body?.options);
     await adapter.validateSchema();
     await adapter.syncCompanies(list, opts);
     res.json({ ok: true });
@@ -54,6 +48,4 @@ app.post("/v1/sync", async (req, res) => {
   }
 });
 
-app.listen(Env.PORT, () => {
-  console.log(`[api] listening on :${Env.PORT}`);
-});
+export {};

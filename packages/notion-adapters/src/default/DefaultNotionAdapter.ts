@@ -1,11 +1,9 @@
-// packages/notion-adapters/src/default/DefaultNotionAdapter.ts
-
 import { Client } from "@notionhq/client";
 import type { CompanyEntry, SyncOptions } from "@shared/types";
 import type { INotionAdapter, PageId } from "./INotionAdapter";
 
 /**
- * Injected configuration (kein Top‑Level process.env mehr!)
+ * Injected configuration (kein Top‑Level process.env)
  */
 type NotionCfg = {
   token: string;
@@ -15,43 +13,30 @@ type NotionCfg = {
 };
 
 /* -------------------- Property-Mappings ---------------------
-   DB_1 (Jobs/Bewerbungen):
-   - Firmen (relation -> DB_3) REQUIRED
-   - Ansprechpartner (relation -> DB_2) OPTIONAL
-   - Date (apply) REQUIRED
-   - Date Nachfrage OPTIONAL
-   - Date Rückmeldung OPTIONAL
-   - Name (title) OPTIONAL (default "Bewerbung")
-   - Skills (multi_select) OPTIONAL
-   - Bemerkung (rich_text) OPTIONAL
-   - Beworben (checkbox) OPTIONAL
-   - Absage (checkbox) OPTIONAL
-   - URL (url) OPTIONAL
+   DB_1 (Jobs/Bewerbungen)
 */
 const DB1 = {
   firmen: "Firmen",
-  ansprechpartner: "Ansprechpartner",
+  ansprechpartner: "Ansprechpartner", // optional
   date: "Date",
-  dateNachfrage: "Date Nachfrage",
-  dateRueckmeldung: "Date Rückmeldung",
-  name: "Name",
-  skills: "Skills",
-  bemerkung: "Bemerkung",
-  beworben: "Beworben",
-  absage: "Absage",
-  url: "URL",
+  dateNachfrage: "Date Nachfrage", // optional
+  dateRueckmeldung: "Date Rückmeldung", // optional
+  name: "Name", // optional (Default "Bewerbung")
+  skills: "Skills", // optional (multi_select)
+  bemerkung: "Bemerkung", // optional (rich_text)
+  beworben: "Beworben", // optional (checkbox)
+  absage: "Absage", // optional (checkbox)
+  url: "URL", // optional (url)
 } as const;
 
-/* DB_2 bleibt unverändert */
+/* DB_2 (Ansprechpartner) – unverändert */
 const DB2 = {
   name: "Name",
   betrieb: "Betriebs_link", // Relation zu DB_3
   linkedin: "Linkedin",
 } as const;
 
-/* DB_3 (Firmen)
-   NEU: Company Email (email) + Company Number (phone)
-*/
+/* DB_3 (Firmen) – neu mit Email/Phone */
 const DB3 = {
   name: "Name",
   adresse: "Adresse",
@@ -202,6 +187,38 @@ export class DefaultNotionAdapter implements INotionAdapter {
     return this.db3HasBacklink;
   }
 
+  /* ---------------------- Skills ---------------------- */
+  async getSkillOptions(): Promise<string[]> {
+    const db = (await this.notion.databases.retrieve({
+      database_id: this.ENV.db1,
+    })) as any;
+
+    const prop = db.properties?.[DB1.skills];
+    const opts = prop?.multi_select?.options ?? [];
+    return opts
+      .map((o: any) => o.name)
+      .filter((s: string) => typeof s === "string" && s.length > 0);
+  }
+
+  async ensureSkillOptions(skills: string[]): Promise<void> {
+    const wanted = (skills ?? []).map((s) => s.trim()).filter(Boolean);
+    if (!wanted.length) return;
+
+    const existing = await this.getSkillOptions();
+    const missing = wanted.filter((s) => !existing.includes(s));
+    if (!missing.length) return;
+
+    const options = [...existing, ...missing].map((name) => ({ name }));
+    await this.notion.databases.update({
+      database_id: this.ENV.db1,
+      properties: {
+        [DB1.skills]: {
+          multi_select: { options },
+        },
+      } as any,
+    });
+  }
+
   /* -------------------- DB_3: Firmen -------------------- */
   private async findCompanyByName(name: string): Promise<PageId | null> {
     const res = await this.notion.databases.query({
@@ -334,6 +351,11 @@ export class DefaultNotionAdapter implements INotionAdapter {
       absage,
     } = params.options;
 
+    // 1) ggf. Skills im Schema anlegen (falls neu)
+    if (skills && skills.length) {
+      await this.ensureSkillOptions(skills);
+    }
+
     const nameToUse = jobName || "Bewerbung";
     const ex = await this.findJobByNameAndCompany(nameToUse, params.companyId);
     if (ex) return ex;
@@ -347,18 +369,15 @@ export class DefaultNotionAdapter implements INotionAdapter {
       [DB1.bemerkung]: pv.text(bemerkung),
     };
 
-    // optionale Booleans nur setzen, wenn übergeben (sonst Default in Notion belassen)
     const cbBeworben = pv.checkbox(beworben);
     if (cbBeworben) props[DB1.beworben] = cbBeworben;
     const cbAbsage = pv.checkbox(absage);
     if (cbAbsage) props[DB1.absage] = cbAbsage;
 
-    // optionale Dates
     if (dateNachfrage) props[DB1.dateNachfrage] = pv.date(dateNachfrage);
     if (dateRueckmeldung)
       props[DB1.dateRueckmeldung] = pv.date(dateRueckmeldung);
 
-    // optionale Relation Ansprechpartner nur setzen, wenn Spalte existiert
     if (params.contactId && (await this.hasDb1ContactRelation())) {
       props[DB1.ansprechpartner] = pv.relation([params.contactId]);
     }

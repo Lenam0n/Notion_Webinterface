@@ -1,12 +1,8 @@
+// apps/api/src/server.ts
 import express from "express";
 import cors from "cors";
-import { ENV } from "./env"; // falls Bundler-Resolution aktiv ist, kannst du auch "./env"
+import { ENV } from "./env.js";
 import { makeAdapter } from "./adapterFactory.js";
-import {
-  CompanyEntrySchema,
-  CompanyListSchema,
-  SyncOptionsSchema,
-} from "@shared/types";
 
 const app = express();
 app.use(cors());
@@ -16,36 +12,39 @@ const adapter = makeAdapter("default");
 
 app.get("/v1/health", (_req, res) => res.json({ ok: true }));
 
-app.post("/v1/validate", async (_req, res) => {
+// NEU: Skills für Autocomplete
+app.get("/v1/skills", async (_req, res) => {
   try {
-    await adapter.validateSchema();
-    res.json({ ok: true });
+    const skills = await adapter.getSkillOptions(); // <- Methode ist im Interface vorhanden
+    res.json({ ok: true, skills });
   } catch (e) {
-    res.status(400).json({ ok: false, error: (e as Error).message });
+    res.status(500).json({ ok: false, error: (e as Error).message });
   }
 });
 
+// Beispiel-Endpunkt: einzelne Firma + Optionen (SyncOptions-ähnlich)
 app.post("/v1/companies", async (req, res) => {
   try {
-    const entry = CompanyEntrySchema.parse(req.body?.entry);
-    const opts = SyncOptionsSchema.parse(req.body?.options);
-    await adapter.syncCompanies([entry], opts);
+    // Keine Shared-Types im FE nötig – wir validieren hier serverseitig.
+    const entry = req.body?.entry;
+    const options = req.body?.options;
+    if (!entry || !options?.applyDate) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "entry und options.applyDate erforderlich" });
+    }
+    await adapter.validateSchema();
+    await adapter.syncCompanies([entry], options);
     res.json({ ok: true });
   } catch (e) {
     res.status(400).json({ ok: false, error: (e as Error).message });
   }
 });
 
-app.post("/v1/sync", async (req, res) => {
-  try {
-    const list = CompanyListSchema.parse(req.body?.list);
-    const opts = SyncOptionsSchema.parse(req.body?.options);
-    await adapter.validateSchema();
-    await adapter.syncCompanies(list, opts);
-    res.json({ ok: true });
-  } catch (e) {
-    res.status(400).json({ ok: false, error: (e as Error).message });
-  }
+const port = ENV.PORT ?? 8787;
+app.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`[api] listening on http://localhost:${port}`);
 });
 
 export {};

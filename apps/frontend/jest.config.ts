@@ -1,42 +1,39 @@
 import type { Config } from "jest";
 
 const config: Config = {
-  displayName: "frontend",
-  rootDir: ".",
+  preset: "ts-jest",
   testEnvironment: "jsdom",
-  // ESM-Unterstützung für TS/TSX
-  extensionsToTreatAsEsm: [".ts", ".tsx"],
+
+  // Wurzelverzeichnisse für Tests
+  roots: ["<rootDir>/src", "<rootDir>/__tests__"],
+
+  // Welche Dateiendungen Jest erkennen soll
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+
+  // Transpile mit ts-jest und dem lokalen tsconfig
   transform: {
-    "^.+\\.(t|j)sx?$": [
+    "^.+\\.(ts|tsx)$": [
       "ts-jest",
       {
-        useESM: true,
-        tsconfig: {
-          module: "esnext",
-          target: "es2022",
-          jsx: "react-jsx",
-          esModuleInterop: true,
-          moduleResolution: "bundler",
-          verbatimModuleSyntax: false, // <-- verhindert TS1286 in Tests
-        },
-        diagnostics: true,
+        tsconfig: "tsconfig.json",
+        isolatedModules: true,
       },
     ],
   },
-  testMatch: ["<rootDir>/**/__tests__/**/*.test.ts?(x)"],
-  setupFilesAfterEnv: ["<rootDir>/../../tests/setup/jest.setup.ts"],
-  reporters: ["default"],
+
+  // Alias-Handling (falls du @shared/types etc. nutzt)
   moduleNameMapper: {
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-    "^@service/(.*)$": "<rootDir>/src/services/$1",
-    "^@component/(.*)$": "<rootDir>/src/components/$1",
-    "^@shared/(.*)$": "<rootDir>/../../packages/shared/src/$1",
+    "^@shared/(.*)$": "<rootDir>/../../packages/shared/$1",
   },
-  // einige ESM-Pakete nicht ignorieren
-  transformIgnorePatterns: [
-    "/node_modules/(?!(@testing-library|react-router|@react-aria|nanoid)/)",
+
+  // Reporter (JSON-Reporter hängt global dran, aber Frontend kann auch eigene haben)
+  reporters: [
+    "default",
+    "<rootDir>/../../tests/reporters/aggregate-json-reporter.js",
   ],
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
+
+  // Setup-Dateien, falls du z.B. react-testing-library erweitern willst
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 };
 
 export default config;

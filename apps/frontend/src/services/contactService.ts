@@ -122,7 +122,9 @@ export async function saveCompanyRemote(
 }
 
 export async function fetchSkillOptions(): Promise<string[]> {
-  const base = import.meta.env?.VITE_API_BASE;
+  const base =
+    (import.meta as any).env?.VITE_API_BASE || process.env.VITE_API_BASE;
+
   if (!base) throw new Error("VITE_API_BASE nicht gesetzt");
   const resp = await fetch(`${base}/v1/skills`);
   const data = await resp.json();

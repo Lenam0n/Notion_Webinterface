@@ -9,9 +9,9 @@
     "dev": "pnpm -r --parallel --filter api --filter frontend dev",
     "build": "pnpm --filter @shared/types --filter @notion/adapters --filter api --filter frontend build",
     "start": "pnpm --filter api start && pnpm --filter frontend preview",
-    "test": "jest --passWithNoTests",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --runInBand"
+    "test": "jest -c jest.config.ts --passWithNoTests",
+    "test:watch": "jest -c jest.config.ts --watch",
+    "test:ci": "jest -c jest.config.ts --runInBand --passWithNoTests"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.7.0",
@@ -21,6 +21,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
+    "jest-json-reporter": "^1.2.2",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1"
   }

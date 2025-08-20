@@ -1,0 +1,31 @@
+# Node / TS
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Env & local
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Frontend/Vite
+apps/frontend/.vite
+apps/frontend/.tmp
+
+# OS
+Thumbs.db

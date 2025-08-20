@@ -1,0 +1,13 @@
+{
+  "name": "notion-pipeline",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter api --filter frontend dev",
+    "build": "pnpm --filter @shared/types --filter @notion/adapters --filter api --filter frontend build",
+    "start": "pnpm --filter api start && pnpm --filter frontend preview"
+  }
+}

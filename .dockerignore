@@ -1,0 +1,30 @@
+# Node
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Builds
+dist
+build
+coverage
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Frontend transient
+apps/frontend/.vite
+apps/frontend/node_modules
+
+# API transient
+apps/api/node_modules

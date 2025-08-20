@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: notion-pipeline-api
+    env_file:
+      - ./apps/api/.env
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: notion-pipeline-frontend
+    environment:
+      # Der Build des Frontends spricht zur Laufzeit die API-URL an.
+      # Wenn das Frontend zur API proxen soll, nutze absolute URLs in deinem Code.
+      # Bei API-Calls aus dem Browser: http://localhost:8787
+      # Wenn du ENV in Vite brauchst, setze sie beim Build:
+      #   docker build --build-arg VITE_API_BASE=http://localhost:8787 ...
+      # Alternativ: .env.production in apps/frontend nutzen.
+      - NODE_ENV=production
+    ports:
+      - "5173:8080"   # NGINX exposen auf 5173 (Frontend erreichbar unter http://localhost:5173)
+    depends_on:
+      - api
+    restart: unless-stopped

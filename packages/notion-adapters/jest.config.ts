@@ -1,4 +1,3 @@
-// packages/notion-adapters/jest.config.ts
 import type { Config } from "jest";
 
 const config: Config = {
@@ -6,7 +5,17 @@ const config: Config = {
   rootDir: ".",
   testEnvironment: "node",
   transform: {
-    "^.+\\.tsx?$": ["ts-jest", { tsconfig: "<rootDir>/tsconfig.json" }],
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: {
+          module: "commonjs",
+          esModuleInterop: true,
+          verbatimModuleSyntax: false,
+        },
+        diagnostics: true,
+      },
+    ],
   },
   testMatch: ["<rootDir>/**/__tests__/**/*.test.ts?(x)"],
   setupFilesAfterEnv: ["<rootDir>/../../tests/setup/jest.setup.ts"],
@@ -15,6 +24,7 @@ const config: Config = {
     "^@shared/(.*)$": "<rootDir>/../shared/src/$1",
     "^@notionhq/client$": "<rootDir>/../../tests/mocks/notionClient.mock.ts",
   },
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
 };
 
 export default config;

@@ -8,6 +8,20 @@
   "scripts": {
     "dev": "pnpm -r --parallel --filter api --filter frontend dev",
     "build": "pnpm --filter @shared/types --filter @notion/adapters --filter api --filter frontend build",
-    "start": "pnpm --filter api start && pnpm --filter frontend preview"
+    "start": "pnpm --filter api start && pnpm --filter frontend preview",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --runInBand"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1"
   }
 }

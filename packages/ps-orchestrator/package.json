@@ -1,0 +1,36 @@
+{
+  "name": "@tools/ps-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Orchestrator für PSD/INDD-Jobs (Bewerbungspipeline)",
+  "main": "dist/index.js",
+  "bin": {
+    "psd-jobs": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "node -r tsconfig-paths/register dist/index.js",
+    "clean": "rimraf dist",
+    "dev:batch": "ts-node -r tsconfig-paths/register src/index-batch.ts",
+    "batch": "node -r tsconfig-paths/register dist/index-batch.js"
+  },
+  "dependencies": {
+    "@shared/types": "workspace:*",
+    "@shared/utils": "workspace:*",
+    "@shared/errors": "workspace:*",
+    "@adobe/aio-sdk": "^6.0.0",
+    "axios": "^1.11.0",
+    "dotenv": "^16.4.5",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/yargs": "^17.0.33",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "~5.5.4"
+  }
+}

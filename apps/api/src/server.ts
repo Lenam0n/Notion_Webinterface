@@ -1,8 +1,10 @@
 // apps/api/src/server.ts
 import express from "express";
 import cors from "cors";
-import { ENV } from "./env.js";
-import { makeAdapter } from "./adapterFactory.js";
+import { ENV } from "@config";
+import { makeAdapter } from "@util/adapterFactory";
+import { templatesRouter } from "@route/templates.routes.js";
+import { orchestratorRouter } from "@route/orchestrator.routes.js";
 
 const app = express();
 app.use(cors());
@@ -40,6 +42,8 @@ app.post("/v1/companies", async (req, res) => {
     res.status(400).json({ ok: false, error: (e as Error).message });
   }
 });
+app.use("/v1/templates", templatesRouter);
+app.use("/v1/orchestrator", orchestratorRouter);
 
 const port = ENV.PORT ?? 8787;
 app.listen(port, () => {

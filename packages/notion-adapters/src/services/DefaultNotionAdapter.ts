@@ -1,6 +1,6 @@
 import { Client } from "@notionhq/client";
 import type { CompanyEntry, SyncOptions } from "@shared/types";
-import type { INotionAdapter, PageId } from "./INotionAdapter";
+import type { INotionAdapter, PageId } from "@interface/INotionAdapter";
 
 /**
  * Injected configuration (kein Top‑Level process.env)

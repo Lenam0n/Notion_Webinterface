@@ -6,7 +6,16 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@controller/*": ["src/controllers/*"],
+      "@route/*": ["src/routes/*"],
+      "@service/*": ["src/services/*"],
+      "@util/*": ["src/utils/*"],
+      "@config": ["src/env"]
+    }
   },
   "include": ["src"]
 }

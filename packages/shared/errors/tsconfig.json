@@ -11,10 +11,10 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@interface/*": ["src/interfaces/*"],
-      "@service/*": ["src/services/*"]
+      "@error/*": ["src/errors/*"],
+      "@type/*": ["src/types/*"]
     }
   },
-  "include": ["src/*.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

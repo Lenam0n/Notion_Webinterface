@@ -3,11 +3,13 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/*/*"
   ],
   "scripts": {
     "dev": "pnpm -r --parallel --filter api --filter frontend dev",
-    "build": "pnpm --filter @shared/types --filter @notion/adapters --filter api --filter frontend build",
+    "build": "pnpm --filter @shared/errors --filter @shared/types --filter @shared/utils --filter ps-orchestrator --filter @notion/adapters --filter api --filter frontend build",
+    "clean": "pnpm --filter @shared/errors --filter @shared/types --filter @shared/utils --filter ps-orchestrator --filter @notion/adapters --filter api clean",
     "start": "pnpm --filter api start && pnpm --filter frontend preview"
   }
 }

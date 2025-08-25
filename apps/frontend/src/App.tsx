@@ -15,6 +15,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<CompanyForm />} />
           <Route path="/all" element={<ContactsList />} />
+          <Route path="/overview" element={<ContactsList />} />
         </Routes>
       </main>
     </div>

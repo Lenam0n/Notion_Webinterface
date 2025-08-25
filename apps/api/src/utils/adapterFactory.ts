@@ -1,7 +1,6 @@
 // apps/api/src/adapterFactory.ts
-import { DefaultNotionAdapter } from "@notion/adapters";
-import type { INotionAdapter } from "@notion/adapters";
-import { ENV } from "./env.js";
+import { DefaultNotionAdapter, type INotionAdapter } from "@notion/adapters";
+import { ENV } from "@config";
 
 export function makeAdapter(kind: "default" = "default"): INotionAdapter {
   switch (kind) {

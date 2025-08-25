@@ -1,0 +1,33 @@
+{
+  "name": "@shared/errors",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./EnvErrors": {
+      "types": "./dist/errors/EnvErrors.d.ts",
+      "default": "./dist/errors/EnvErrors.js"
+    },
+    "./AuthErrors": {
+      "types": "./dist/errors/AuthErrors.d.ts",
+      "default": "./dist/errors/AuthErrors.js"
+    },
+    "./HttpError": {
+      "types": "./dist/errors/HttpError.d.ts",
+      "default": "./dist/errors/HttpError.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.4"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@notion/adapters",
+  "name": "@shared/utils",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
@@ -8,6 +8,18 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./env": {
+      "types": "./dist/env.d.ts",
+      "default": "./dist/env.js"
+    },
+    "./fs": {
+      "types": "./dist/fsUtils.d.ts",
+      "default": "./dist/fsUtils.js"
+    },
+    "./fsUtils": {
+      "types": "./dist/fsUtils.d.ts",
+      "default": "./dist/fsUtils.js"
     }
   },
   "scripts": {
@@ -15,13 +27,10 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@notionhq/client": "^2.2.14",
-    "@shared/errors": "workspace:*",
-    "@shared/types": "workspace:*",
-    "@shared/utils": "workspace:*",
-    "zod": "^3.23.8"
+    "@shared/errors": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

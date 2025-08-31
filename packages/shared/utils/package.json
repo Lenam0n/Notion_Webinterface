@@ -10,16 +10,16 @@
       "default": "./dist/index.js"
     },
     "./env": {
-      "types": "./dist/env.d.ts",
-      "default": "./dist/env.js"
+      "types": "./dist/utils/env.d.ts",
+      "default": "./dist/utils/env.js"
     },
     "./fs": {
-      "types": "./dist/fsUtils.d.ts",
-      "default": "./dist/fsUtils.js"
+      "types": "./dist/utils/fsUtils.d.ts",
+      "default": "./dist/utils/fsUtils.js"
     },
     "./fsUtils": {
-      "types": "./dist/fsUtils.d.ts",
-      "default": "./dist/fsUtils.js"
+      "types": "./dist/utils/fsUtils.d.ts",
+      "default": "./dist/utils/fsUtils.js"
     }
   },
   "scripts": {

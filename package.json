@@ -17,5 +17,9 @@
     "clean:dist": "pnpm -r exec rimraf dist",
     "clean:all": "pnpm -r exec rimraf dist node_modules",
     "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
   }
 }

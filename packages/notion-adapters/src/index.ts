@@ -1,2 +1,2 @@
-export type { INotionAdapter } from "@interface/INotionAdapter";
-export { DefaultNotionAdapter } from "@service/DefaultNotionAdapter";
+export type { INotionAdapter } from "./interfaces/INotionAdapter";
+export { DefaultNotionAdapter } from "./services/DefaultNotionAdapter";

@@ -6,7 +6,14 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.3.0
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
 
   apps/api:
     dependencies:
@@ -44,6 +51,9 @@ importers:
       '@types/multer':
         specifier: ^2.0.0
         version: 2.0.0
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.3.0)(typescript@5.8.3)
@@ -254,6 +264,7 @@ packages:
   '@adobe/aio-lib-core-networking@5.0.4':
     resolution: {integrity: sha512-LsFPKIXqfWiMwSjD9NJbb6uUSlZ+DZiV8p9NhpqPyzqAAl9NNONAH0jcIKtsKWSULcHc20INaRAw8dqKzQBTbw==}
     engines: {node: '>=18'}
+    bundledDependencies: []
 
   '@adobe/aio-lib-core-tvm@4.0.3':
     resolution: {integrity: sha512-zwl4GeU5CryZBozpub4jI9tnGW2ewD6mMLaXX8HhO8DqKzcjnjYr+MbUS0c/QzGd8gTzZWbikm4J7tfpCn3cAA==}
@@ -262,10 +273,12 @@ packages:
   '@adobe/aio-lib-customer-profile@3.0.1':
     resolution: {integrity: sha512-OnfrzIVd9GopPvuTM7mQmBZi/FNFd9/N403r42RrQXjcQnO8juoadlvhjaQMeb9vrAPZ4VO1PxyTCWyR/t2W4g==}
     engines: {node: '>=18'}
+    bundledDependencies: []
 
   '@adobe/aio-lib-env@3.0.1':
     resolution: {integrity: sha512-UaLosV8jBowEA2ho4BNmWuHhrNCFbx26kJAr2SAIdEm4lZ/D8av8FUSMOEyAKJ/dfO2HCnLKMy77ie2AU7HI3g==}
     engines: {node: '>=18'}
+    bundledDependencies: []
 
   '@adobe/aio-lib-events@4.0.1':
     resolution: {integrity: sha512-n6y7daoHoz79o06+kIJzHcOTbD7j9jt2YCT7njtms6Aoj8fbkiBuGBIjCx+XxXy1TJJxfwUrL5TZjbzeroHiXw==}
@@ -2397,6 +2410,11 @@ packages:
 
   typescript@5.8.3:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -5268,6 +5286,8 @@ snapshots:
   typescript@5.5.4: {}
 
   typescript@5.8.3: {}
+
+  typescript@5.9.2: {}
 
   undici-types@6.21.0: {}
 

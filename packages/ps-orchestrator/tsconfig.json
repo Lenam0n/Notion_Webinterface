@@ -1,18 +1,13 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "lib": ["ES2022"],
     "rootDir": "src",
     "outDir": "dist",
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
 
     "baseUrl": ".",
     "paths": {
       "@interface/*": ["src/interfaces/*"],
+      "@client/*": ["src/clients/*"],
       "@template/*": ["src/templates/*"],
       "@template~ps/*": ["src/templates/photoshop/*"],
       "@template~id/*": ["src/templates/indesign/*"],
@@ -22,21 +17,8 @@
       "@util/*": ["src/utils/*"],
       "@error/*": ["src/errors/*"],
       "@config": ["src/config.ts"]
-    },
-
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "types": ["node"]
+    }
   },
-  "include": ["src", "src/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }
